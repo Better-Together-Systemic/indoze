@@ -1354,7 +1354,7 @@ body{
       <div class="campo"><label class="campo-label">E-mail</label><input type="email" class="campo-input" id="cad-email"><div class="campo-erro" id="e-email">E-mail inválido.</div></div>
       <div class="campo"><label class="campo-label">Telefone (somente números)</label><input type="tel" class="campo-input" id="cad-tel" maxlength="15"><div class="campo-erro" id="e-tel">Apenas números.</div></div>
       <div class="campo"><label class="campo-label">Instagram</label><input type="text" class="campo-input" id="cad-insta" placeholder="@seuperfil"><div class="campo-erro" id="e-insta">Deve começar com @.</div></div>
-      <div class="campo"><label class="campo-label">Senha</label><input type="password" class="campo-input" id="cad-senha"><div class="campo-erro" id="e-senha">Mínimo 6 caracteres.</div></div>
+      <div class="campo"><label class="campo-label">Senha</label><input type="password" class="campo-input" id="cad-senha"><div class="campo-erro" id="e-senha">Mínimo 8 caracteres.</div></div>
       <div class="campo"><label class="campo-label">Confirmar senha</label><input type="password" class="campo-input" id="cad-senha2"><div class="campo-erro" id="e-senha2">Senhas não conferem.</div></div>
       <button class="btn-auth" onclick="cadastrar()">Criar conta</button>
       <div class="auth-link" style="margin-top:1.25rem;">
@@ -1568,7 +1568,7 @@ async function alterarSenha(){
   const err   = document.getElementById('conta-erro-msg');
   ok.classList.remove('visivel');
   err.classList.remove('visivel');
-  if(nova.length<6){ err.textContent='A nova senha deve ter mínimo 6 caracteres.'; err.classList.add('visivel'); return; }
+  if(nova.length<8){ err.textContent='A nova senha deve ter mínimo 8 caracteres.'; err.classList.add('visivel'); return; }
   if(nova!==nova2)  { err.textContent='As novas senhas não conferem.';             err.classList.add('visivel'); return; }
 
   const { error } = await sb.auth.updateUser({ password: nova });
@@ -2043,7 +2043,7 @@ async function cadastrar(){
   v('e-email','E-mail inválido.',!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
   v('e-tel','Apenas números.',!/^\d{8,}$/.test(tel));
   v('e-insta','Deve começar com @.',!insta.startsWith('@'));
-  v('e-senha','Mínimo 6 caracteres.',senha.length<6);
+  v('e-senha','Mínimo 8 caracteres.',senha.length<8);
   v('e-senha2','Senhas não conferem.',senha!==senha2);
   if(!ok) return;
 
@@ -2056,7 +2056,30 @@ async function cadastrar(){
   });
 
   btnCad.disabled=false; btnCad.textContent='Criar conta';
-  if(error){ document.getElementById('e-senha2').textContent=error.message; document.getElementById('e-senha2').classList.add('visivel'); }
+
+  if(error){
+    let msg = error.message;
+    if(msg.includes('already registered')) msg = 'Este e-mail já possui cadastro. Clique em Entrar.';
+    if(msg.includes('password')) msg = 'Senha fraca. Use pelo menos 8 caracteres.';
+    if(msg.includes('rate')) msg = 'Muitas tentativas. Aguarde alguns minutos e tente novamente.';
+    document.getElementById('e-senha2').textContent = msg;
+    document.getElementById('e-senha2').classList.add('visivel');
+    return;
+  }
+
+  // Sucesso — mostra mensagem de confirmação
+  document.querySelector('#ml-cadastro').innerHTML = `
+    <div style="text-align:center;padding:1rem 0;">
+      <div style="font-size:2.5rem;margin-bottom:1rem;">🌱</div>
+      <h2 class="auth-titulo" style="margin-bottom:.75rem;">Conta criada!</h2>
+      <p class="auth-sub" style="line-height:1.7;">
+        Enviamos um e-mail de confirmação para<br>
+        <strong style="color:var(--branco);">${email}</strong><br><br>
+        Clique no link do e-mail e depois volte aqui para entrar.
+      </p>
+      <button class="btn-auth" style="margin-top:1.5rem;" onclick="mostrarLoginModal()">Ir para o login</button>
+    </div>
+  `;
 }
 
 async function fazerLogin(){
