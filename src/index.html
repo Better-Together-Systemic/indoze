@@ -1624,10 +1624,8 @@ let serieAtiva    = null;   // linha da tabela series
 let diaAberto     = null;
 let escrivaoContextoDia = null;
 
-// A chave da Anthropic fica segura no servidor (Edge Function Supabase)
-// O frontend nunca a ve — apenas chama o proxy autenticado pelo JWT do usuario
-const EDGE_PROXY = SUPA_URL + '/functions/v1/anthropic-proxy';
-const MODELO     = 'claude-sonnet-4-20250514';
+// Escrivão usa Edge Function via sb.functions.invoke (JWT gerenciado automaticamente)
+const MODELO = 'claude-sonnet-4-20250514';
 
 /* ══════════════════════════════════════════
    INIT
@@ -2533,52 +2531,28 @@ function mostrarCadastro(){ mostrarCadastroModal(); }
 
 /* ══════════════════════════════════════════
    API — via Edge Function segura no Supabase
-   A chave da Anthropic nunca sai do servidor
+   Usa sb.functions.invoke que gerencia JWT automaticamente
 ══════════════════════════════════════════ */
 async function apiCall(body, tentativas=3){
   for(let i=0; i<tentativas; i++){
     try{
-      // Sempre busca o token mais recente a cada tentativa
-      const { data:{ session }, error:sessErr } = await sb.auth.getSession();
-      if(sessErr || !session?.access_token){
-        throw new Error('Sessão expirada. Faça login novamente.');
-      }
-      const token = session.access_token;
-
-      const r = await fetch(EDGE_PROXY, {
-        method: 'POST',
-        headers: {
-          'Content-Type':  'application/json',
-          'Authorization': 'Bearer ' + token,
-          'apikey':        SUPA_KEY,
-        },
-        body: JSON.stringify(body),
+      // sb.functions.invoke injeta o JWT da sessão ativa automaticamente
+      const { data, error } = await sb.functions.invoke('anthropic-proxy', {
+        body: body,
       });
 
-      // 401 = token inválido — tenta renovar e reintentar
-      if(r.status === 401){
-        const { data:{ session: s2 } } = await sb.auth.refreshSession();
-        if(!s2) throw new Error('Sessão expirada. Faça login novamente.');
-        // Usa novo token imediatamente
-        const r2 = await fetch(EDGE_PROXY, {
-          method: 'POST',
-          headers: {
-            'Content-Type':  'application/json',
-            'Authorization': 'Bearer ' + s2.access_token,
-            'apikey':        SUPA_KEY,
-          },
-          body: JSON.stringify(body),
-        });
-        if(!r2.ok) throw new Error('HTTP ' + r2.status);
-        const d2 = await r2.json();
-        if(d2.error) throw new Error(d2.error);
-        return d2;
+      if(error){
+        // Se for erro de auth, tenta renovar sessão e retentar
+        if(error.message?.includes('401') || error.context?.status === 401){
+          await sb.auth.refreshSession();
+          if(i < tentativas-1) { await new Promise(r=>setTimeout(r,1000)); continue; }
+        }
+        throw new Error(error.message || 'Erro na função.');
       }
 
-      if(!r.ok) throw new Error('HTTP ' + r.status);
-      const d = await r.json();
-      if(d.error) throw new Error(d.error);
-      return d;
+      if(data?.error) throw new Error(data.error);
+      return data;
+
     }catch(e){
       if(i === tentativas-1) throw e;
       await new Promise(r => setTimeout(r, 1500*(i+1)));
