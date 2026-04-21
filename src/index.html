@@ -2328,8 +2328,11 @@ async function investigar(){
     }
     await renderHistoricoEscrivao();
     document.getElementById('escriv-pos-resp').style.display='block';
-  }catch{
+  }catch(e){
     resp.classList.remove('visivel');
+    erro.textContent = e.message?.includes('Sessão') 
+      ? 'Sessão expirada. Recarregue a página e faça login novamente.'
+      : 'Conexão instável. Verifique sua internet e tente novamente.';
     erro.classList.add('visivel');
   }finally{
     btn.disabled=false; btn.textContent='Investigar com o Escrivão';
@@ -2533,29 +2536,52 @@ function mostrarCadastro(){ mostrarCadastroModal(); }
    A chave da Anthropic nunca sai do servidor
 ══════════════════════════════════════════ */
 async function apiCall(body, tentativas=3){
-  // Pega o JWT da sessão atual para autenticar na Edge Function
-  const { data:{ session } } = await sb.auth.getSession();
-  const token = session?.access_token;
-  if(!token) throw new Error('Sessão expirada. Faça login novamente.');
-
   for(let i=0; i<tentativas; i++){
     try{
+      // Sempre busca o token mais recente a cada tentativa
+      const { data:{ session }, error:sessErr } = await sb.auth.getSession();
+      if(sessErr || !session?.access_token){
+        throw new Error('Sessão expirada. Faça login novamente.');
+      }
+      const token = session.access_token;
+
       const r = await fetch(EDGE_PROXY, {
         method: 'POST',
         headers: {
           'Content-Type':  'application/json',
-          'Authorization': 'Bearer ' + token,  // JWT do usuário — verifica autenticação
-          'apikey':        SUPA_KEY,            // anon key pública (obrigatória pelo Supabase)
+          'Authorization': 'Bearer ' + token,
+          'apikey':        SUPA_KEY,
         },
         body: JSON.stringify(body),
       });
+
+      // 401 = token inválido — tenta renovar e reintentar
+      if(r.status === 401){
+        const { data:{ session: s2 } } = await sb.auth.refreshSession();
+        if(!s2) throw new Error('Sessão expirada. Faça login novamente.');
+        // Usa novo token imediatamente
+        const r2 = await fetch(EDGE_PROXY, {
+          method: 'POST',
+          headers: {
+            'Content-Type':  'application/json',
+            'Authorization': 'Bearer ' + s2.access_token,
+            'apikey':        SUPA_KEY,
+          },
+          body: JSON.stringify(body),
+        });
+        if(!r2.ok) throw new Error('HTTP ' + r2.status);
+        const d2 = await r2.json();
+        if(d2.error) throw new Error(d2.error);
+        return d2;
+      }
+
       if(!r.ok) throw new Error('HTTP ' + r.status);
       const d = await r.json();
       if(d.error) throw new Error(d.error);
       return d;
     }catch(e){
       if(i === tentativas-1) throw e;
-      await new Promise(r => setTimeout(r, 1800*(i+1)));
+      await new Promise(r => setTimeout(r, 1500*(i+1)));
     }
   }
 }
