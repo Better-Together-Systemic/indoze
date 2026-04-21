@@ -1624,9 +1624,8 @@ let serieAtiva    = null;   // linha da tabela series
 let diaAberto     = null;
 let escrivaoContextoDia = null;
 
-// Escrivão usa Edge Function via fetch direto
-const EDGE_URL = 'https://xfniavcbswqapietgjbe.supabase.co/functions/v1/anthropic-proxy';
-const MODELO   = 'claude-sonnet-4-5';
+// Escrivão usa Edge Function via sb.functions.invoke (JWT gerenciado automaticamente)
+const MODELO = 'claude-sonnet-4-20250514';
 
 /* ══════════════════════════════════════════
    INIT
@@ -2531,23 +2530,29 @@ function mostrarLogin()   { mostrarLoginModal();   }
 function mostrarCadastro(){ mostrarCadastroModal(); }
 
 /* ══════════════════════════════════════════
-   API — Edge Function Supabase (verify_jwt: false)
-   Chave Anthropic fica segura no servidor
+   API — via Edge Function segura no Supabase
+   Usa sb.functions.invoke que gerencia JWT automaticamente
 ══════════════════════════════════════════ */
 async function apiCall(body, tentativas=3){
-  // Remove o campo 'model' do body — a Edge Function usa modelo fixo
-  const { model, ...resto } = body;
   for(let i=0; i<tentativas; i++){
     try{
-      const r = await fetch(EDGE_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(resto),
+      // sb.functions.invoke injeta o JWT da sessão ativa automaticamente
+      const { data, error } = await sb.functions.invoke('anthropic-proxy', {
+        body: body,
       });
-      const d = await r.json();
-      if(!r.ok) throw new Error(d?.error || 'Erro HTTP ' + r.status);
-      if(d.error) throw new Error(d.error);
-      return d;
+
+      if(error){
+        // Se for erro de auth, tenta renovar sessão e retentar
+        if(error.message?.includes('401') || error.context?.status === 401){
+          await sb.auth.refreshSession();
+          if(i < tentativas-1) { await new Promise(r=>setTimeout(r,1000)); continue; }
+        }
+        throw new Error(error.message || 'Erro na função.');
+      }
+
+      if(data?.error) throw new Error(data.error);
+      return data;
+
     }catch(e){
       if(i === tentativas-1) throw e;
       await new Promise(r => setTimeout(r, 1500*(i+1)));
