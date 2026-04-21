@@ -631,6 +631,85 @@ body{
   color:rgba(250,250,248,.35);
 }
 
+/* ─── FORÇA DA SENHA ─── */
+.senha-forca-wrap{margin-top:8px;}
+.senha-forca-barra{
+  display:flex;gap:4px;margin-bottom:8px;
+}
+.senha-forca-seg{
+  height:4px;flex:1;border-radius:2px;
+  background:rgba(200,149,42,.15);
+  transition:background .3s;
+}
+.senha-forca-seg.ativa-fraca   { background:#e74c3c; }
+.senha-forca-seg.ativa-media   { background:#f39c12; }
+.senha-forca-seg.ativa-forte   { background:#2ecc71; }
+.senha-forca-label{
+  font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  margin-bottom:8px;min-height:14px;transition:color .3s;
+}
+.senha-forca-label.fraca  { color:#e74c3c; }
+.senha-forca-label.media  { color:#f39c12; }
+.senha-forca-label.forte  { color:#2ecc71; }
+
+/* checklist de requisitos */
+.senha-reqs{
+  display:flex;flex-direction:column;gap:5px;
+  padding:10px 12px;
+  background:rgba(200,149,42,.04);
+  border:1px solid rgba(200,149,42,.1);
+}
+.sr{
+  display:flex;align-items:center;gap:8px;
+  font-size:12px;
+  color:var(--muted);
+  transition:all .25s;
+  position:relative;
+}
+/* estado: pendente */
+.sr .sr-icon{
+  width:16px;height:16px;flex-shrink:0;
+  border:1px solid rgba(200,149,42,.3);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;
+  transition:all .25s;
+}
+.sr .sr-txt{
+  transition:all .25s;
+}
+/* estado: atingido */
+.sr.ok{color:rgba(250,250,248,.75);}
+.sr.ok .sr-icon{
+  background:#2ecc71;border-color:#2ecc71;color:#fff;
+}
+.sr.ok .sr-txt{
+  text-decoration:line-through;
+  text-decoration-color:#2ecc71;
+  text-decoration-thickness:1.5px;
+  color:rgba(250,250,248,.45);
+}
+
+/* ─── MODAL RECUPERAR SENHA ─── */
+.modal-rec-bg{
+  display:none;
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.92);
+  z-index:600;
+  align-items:center;
+  justify-content:center;
+  padding:2rem 1rem;
+}
+.modal-rec-bg.aberto{display:flex;}
+.modal-rec{
+  background:var(--quase-preto);
+  border:1px solid rgba(200,149,42,.2);
+  max-width:400px;width:100%;
+  animation:entrar .3s ease;
+  position:relative;
+}
+.modal-rec-inner{padding:2.5rem 2rem 2rem;}
+
 /* ─── MODAL CONTA (dropdown) ─── */
 .user-dropdown{
   position:relative;
@@ -986,37 +1065,48 @@ body{
 <div class="modal-bg" id="modal-origem">
   <div class="modal">
     <div class="modal-cab">
-      <div class="modal-cab-titulo">O Efeito Chocadeira</div>
-      <div class="modal-cab-sub">Da intuição ancestral à criação digital — a história de uma ideia que já estava pronta muito antes de nascer.</div>
+      <div class="modal-cab-titulo">O início do INDOZE: O Efeito Indez</div>
+      <div class="modal-cab-sub">Da intuição ancestral à inovação digital — a história de uma ideia que já estava pronta muito antes de nascer.</div>
     </div>
     <div class="modal-corpo">
+
       <div class="origem-item">
         <div class="origem-num">I</div>
-        <div class="origem-titulo-item">Tudo começa com as mãos de uma bisa</div>
-        <div class="origem-texto-item">A bisavó de Eliane trançava ninhos de taquara com as próprias mãos. A madeira espetava, machucava — mas ela não parava. O pai, ainda menino, a acompanhava, levava pães doces e ajudava a recolher mais de 100 ovos. Essa cena ficou guardada no campo, esperando o momento certo de brotar.</div>
-        <div class="origem-quote">"Aí eu silenciei... silêncio total. E ele desenrolou a história."</div>
+        <div class="origem-titulo-item">A Ruptura e o Rascunho — A Semente</div>
+        <div class="origem-texto-item">Toda grande inovação exige que, em algum momento, você solte o que é seguro. Em 2021, tomei a decisão de exonerar meu cargo em um concurso público. Foi um salto no escuro. Lembro-me de olhar para o meu pai, imersa na incerteza de quem estava deixando uma vida estável para trás, e perguntar: — Pai, o que eu faço? Eu não sei fazer outra coisa a não ser trabalhar na escola. A resposta dele foi de uma simplicidade que, na época, beirava o absurdo. Ele me olhou e disse:</div>
+        <div class="origem-quote">"Vende ovos. Compra galinhas!"</div>
+        <div class="origem-texto-item" style="margin-top:.75rem;">Anotar aquilo em um rascunho parecia loucura, mas uma voz silenciosa me ancorava. A minha mãe, desnacida em 2016, sempre me dizia: "Calma, você vai conseguir!" Hoje, ela vive em mim. O rascunho foi guardado. A semente estava plantada.</div>
       </div>
+
       <div class="origem-item">
         <div class="origem-num">II</div>
-        <div class="origem-titulo-item">O caderno de 5ª série e a decisão</div>
-        <div class="origem-texto-item">Um dia, o pai chegou com um caderno velho cheio de histórias antigas. Ele sentou na pontinha do sofá — e a história começou. Naquele momento, Eliane tomou uma decisão imediata: transformar o legado dos ancestrais em material de construção.</div>
-        <div class="origem-quote">"Me aguarde, porque isso tá sendo meu material de construção."</div>
+        <div class="origem-titulo-item">A Sincronicidade — A Incubação</div>
+        <div class="origem-texto-item">Cinco anos se passaram. Eu vinha me transformando, testando metodologias, e já havia aplicado a minha série de 12 dias de investigação interior por duas vezes. O terreno estava sendo preparado. Até que, no dia 3 de março de 2026, a Mestra Olinda Guedes, em uma de suas aulas sistêmicas, começou a contar a história do "Indez" — o ovo deixado no ninho para sinalizar às galinhas o lugar seguro para a vida brotar. Aquilo me chamou uma atenção magnética. Como a própria Olinda ensina:</div>
+        <div class="origem-quote">"Tudo que você busca dá um jeito de te encontrar."</div>
+        <div class="origem-texto-item" style="margin-top:.75rem;">E a resposta estava prestes a bater na minha porta.</div>
       </div>
+
       <div class="origem-item">
         <div class="origem-num">III</div>
-        <div class="origem-titulo-item">O rascunho que virou método</div>
-        <div class="origem-texto-item">Em 2021, ao sair do concurso público, Eliane escreveu num papel: "Compra umas galinhas e vende ovo." Um rascunho esquecido que se tornou a base de um negócio digital anos depois. A Professora Olinda Guedes ensinava a metáfora dos ninhos na aula sistêmica — e tudo começou a se juntar com precisão ancestral.</div>
-        <div class="origem-quote">"Choquei no sentido literal, porque eu não estava acreditando no que falava para mim mesma."</div>
+        <div class="origem-titulo-item">A Epifania — Conectando os Pontos</div>
+        <div class="origem-texto-item">Dias depois, meu pai chegou com um caderno velho de 5ª série, repleto de histórias antigas da nossa linhagem. Ele sentou-se na pontinha do sofá e a narrativa começou. Ele narrou como minha bisavó trançava ninhos de taquara com as próprias mãos. A madeira espetava, machucava, mas ela não parava. O meu pai, ainda menino, a acompanhava, levava pães doces e a ajudava a recolher mais de 100 ovos por dia nos ninhos que ela mesma construía.</div>
+        <div class="origem-quote">"Aí eu silenciei... silêncio total. E ele desenrolou a história."</div>
+        <div class="origem-texto-item" style="margin-top:.75rem;">Foi nesse exato segundo que o tempo dobrou sobre si mesmo. O rascunho de 2021, a aula da Olinda e a história da minha Bisa colidiram na minha mente. O "vender ovos" não era literal; era sobre criar ecossistemas seguros para que as pessoas pudessem botar para fora suas dores e chocar novos começos. Na visão sistêmica, como nos lembra Bert Hellinger: "Assentir. Concordar. Dizer Sim. A vida é o que é!" Ao dizer sim à minha história, o método nasceu. Tomei a decisão imediata:</div>
+        <div class="origem-quote">"Me aguarde, porque isso tá sendo meu material de construção."</div>
       </div>
+
       <div class="origem-item">
         <div class="origem-num">IV</div>
-        <div class="origem-titulo-item">O nascimento do INDOZE — às 3h30 da manhã</div>
-        <div class="origem-texto-item">Num fluxo ininterrupto, Eliane escrevia para não perder nenhuma ideia, delegando a estruturação para a inteligência artificial enquanto dormia. De anotações soltas nasceu uma plataforma completa. IN — o movimento sistêmico de ir para dentro. DOZE — o ciclo de 12 dias.</div>
+        <div class="origem-titulo-item">A Inovação e a Arquitetura — O Nascimento</div>
+        <div class="origem-texto-item">Quando liguei os fatos, uma energia incontrolável tomou conta de mim. Olhei para o meu noivo, Bruno, e gritei com toda a força dos meus pulmões: — "Bruno: Choqueiiiiii!" A percepção foi avassaladora e matemática: se o Efeito Indez e a série de 12 dias foram tão transformadores para mim, eles poderiam ser bons para milhares de pessoas no mundo todo. Peguei minha base de materiais e, às 3h30 da manhã, em um fluxo ininterrupto, comecei a escrever para não perder nenhuma ideia.</div>
         <div class="origem-quote">"Botei tanto ovo que esqueci de carregar o computador."</div>
+        <div class="origem-texto-item" style="margin-top:.75rem;">Como um brilhante analista de sistemas, Bruno assumiu a linha de frente tecnológica. Como ele mesmo sempre diz diante dos desafios: "Tudo é o jeito." Sem ele, a grandiosidade desta plataforma não existiria. Ele traduziu a alma da minha ancestralidade em códigos de alto nível. Assim surgiu o INDOZE: <strong style="color:var(--areia);">IN</strong> — o movimento sistêmico de ir para dentro. <strong style="color:var(--areia);">DOZE</strong> — o ciclo exato de 12 dias de reprogramação mental e ação prática, um estudo completo baseado nos ensinamentos de Byron Katie.</div>
       </div>
+
       <div class="serie-aviso">
-        <div class="serie-aviso-txt">A cada 12 dias concluídos, uma nova série se abre. Um conhecimento que serve para a vida toda. Uma transformação que começa por dentro — e se multiplica.</div>
+        <div class="serie-aviso-txt">O que começou com as mãos de uma bisavó tecendo taquara, hoje é uma plataforma digital que acolhe histórias, desconstrói crenças e ensina o mundo a transformar dor em potência. A cada 12 dias concluídos, uma nova série se abre. Uma transformação que começa por dentro — e se multiplica.</div>
       </div>
+
       <div style="text-align:center;">
         <div style="font-size:12px;color:var(--muted);margin-bottom:.75rem;letter-spacing:.05em;">Siga e compartilhe</div>
         <button class="insta-btn" onclick="window.open('https://www.instagram.com/elianesimoescruz','_blank')">
@@ -1341,7 +1431,10 @@ body{
         <div class="campo-erro" id="e-log">E-mail ou senha incorretos.</div>
       </div>
       <button class="btn-auth" onclick="fazerLogin()">Entrar</button>
-      <div class="auth-link" style="margin-top:1.25rem;">
+      <div class="auth-link" style="margin-top:1rem;">
+        <a onclick="abrirRecuperarSenha()" style="color:var(--ouro);cursor:pointer;">Esqueceu sua senha?</a>
+      </div>
+      <div class="auth-link" style="margin-top:.5rem;">
         Não tem cadastro? <a onclick="mostrarCadastroModal()" style="color:var(--ouro);cursor:pointer;">Crie sua conta</a>
       </div>
     </div>
@@ -1354,12 +1447,112 @@ body{
       <div class="campo"><label class="campo-label">E-mail</label><input type="email" class="campo-input" id="cad-email"><div class="campo-erro" id="e-email">E-mail inválido.</div></div>
       <div class="campo"><label class="campo-label">Telefone (somente números)</label><input type="tel" class="campo-input" id="cad-tel" maxlength="15"><div class="campo-erro" id="e-tel">Apenas números.</div></div>
       <div class="campo"><label class="campo-label">Instagram</label><input type="text" class="campo-input" id="cad-insta" placeholder="@seuperfil"><div class="campo-erro" id="e-insta">Deve começar com @.</div></div>
-      <div class="campo"><label class="campo-label">Senha</label><input type="password" class="campo-input" id="cad-senha"><div class="campo-erro" id="e-senha">Mínimo 8 caracteres.</div></div>
-      <div class="campo"><label class="campo-label">Confirmar senha</label><input type="password" class="campo-input" id="cad-senha2"><div class="campo-erro" id="e-senha2">Senhas não conferem.</div></div>
-      <button class="btn-auth" onclick="cadastrar()">Criar conta</button>
+      <div class="campo">
+        <label class="campo-label">Senha</label>
+        <input type="password" class="campo-input" id="cad-senha" oninput="avaliarSenha(this.value)" autocomplete="new-password" placeholder="Crie uma senha segura">
+        <div class="senha-forca-wrap" id="senha-forca-wrap" style="display:none;">
+          <div class="senha-forca-barra">
+            <div class="senha-forca-seg" id="sf1"></div>
+            <div class="senha-forca-seg" id="sf2"></div>
+            <div class="senha-forca-seg" id="sf3"></div>
+            <div class="senha-forca-seg" id="sf4"></div>
+            <div class="senha-forca-seg" id="sf5"></div>
+          </div>
+          <div class="senha-forca-label" id="sf-texto"></div>
+          <div class="senha-reqs">
+            <div class="sr" id="sr-len">
+              <span class="sr-icon"></span>
+              <span class="sr-txt">Mínimo 8 caracteres</span>
+            </div>
+            <div class="sr" id="sr-mai">
+              <span class="sr-icon"></span>
+              <span class="sr-txt">Pelo menos 1 letra maiúscula (A–Z)</span>
+            </div>
+            <div class="sr" id="sr-min">
+              <span class="sr-icon"></span>
+              <span class="sr-txt">Pelo menos 1 letra minúscula (a–z)</span>
+            </div>
+            <div class="sr" id="sr-num">
+              <span class="sr-icon"></span>
+              <span class="sr-txt">Pelo menos 1 número (0–9)</span>
+            </div>
+            <div class="sr" id="sr-esp">
+              <span class="sr-icon"></span>
+              <span class="sr-txt">Pelo menos 1 caractere especial (!@#$%...)</span>
+            </div>
+          </div>
+        </div>
+        <div class="campo-erro" id="e-senha"></div>
+      </div>
+      <div class="campo"><label class="campo-label">Confirmar senha</label><input type="password" class="campo-input" id="cad-senha2" autocomplete="new-password"><div class="campo-erro" id="e-senha2">Senhas não conferem.</div></div>
+      <button class="btn-auth" id="btn-criar-conta" onclick="cadastrar()">Criar conta</button>
       <div class="auth-link" style="margin-top:1.25rem;">
         Já tem conta? <a onclick="mostrarLoginModal()" style="color:var(--ouro);cursor:pointer;">Entrar</a>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL RECUPERAR SENHA -->
+<div class="modal-rec-bg" id="modal-rec-bg">
+  <div class="modal-rec">
+    <button class="modal-login-fechar" onclick="fecharRecuperarSenha()">✕</button>
+
+    <!-- passo 1: informar e-mail -->
+    <div id="rec-passo1" class="modal-rec-inner">
+      <h2 class="auth-titulo" style="margin-bottom:.35rem;">Recuperar senha</h2>
+      <p class="auth-sub" style="line-height:1.6;">Informe o e-mail cadastrado. Você receberá um link para criar uma nova senha.</p>
+      <div class="campo">
+        <label class="campo-label">E-mail</label>
+        <input type="email" class="campo-input" id="rec-email">
+        <div class="campo-erro" id="e-rec-email">E-mail inválido.</div>
+      </div>
+      <button class="btn-auth" onclick="enviarRecuperacao()">Enviar link</button>
+      <div class="conta-ok" id="rec-ok" style="display:none;margin-top:1rem;font-size:13px;color:#2ecc71;">
+        ✓ Link enviado! Verifique sua caixa de entrada.
+      </div>
+      <div class="conta-erro" id="rec-erro" style="display:none;margin-top:.75rem;font-size:12px;color:#e74c3c;"></div>
+      <div class="auth-link" style="margin-top:1.25rem;">
+        <a onclick="fecharRecuperarSenha();abrirModalLogin()" style="color:var(--ouro);cursor:pointer;">← Voltar para o login</a>
+      </div>
+    </div>
+
+    <!-- passo 2: nova senha (após clicar no link do e-mail) -->
+    <div id="rec-passo2" class="modal-rec-inner" style="display:none;">
+      <h2 class="auth-titulo" style="margin-bottom:.35rem;">Nova senha</h2>
+      <p class="auth-sub">Escolha uma nova senha para sua conta.</p>
+      <div class="campo">
+        <label class="campo-label">Nova senha</label>
+        <input type="password" class="campo-input" id="rec-nova-senha" oninput="avaliarSenhaRec(this.value)" autocomplete="new-password" placeholder="Crie uma senha segura">
+        <div class="senha-forca-wrap" id="rec-forca-wrap" style="display:none;">
+          <div class="senha-forca-barra">
+            <div class="senha-forca-seg" id="rfs1"></div>
+            <div class="senha-forca-seg" id="rfs2"></div>
+            <div class="senha-forca-seg" id="rfs3"></div>
+            <div class="senha-forca-seg" id="rfs4"></div>
+            <div class="senha-forca-seg" id="rfs5"></div>
+          </div>
+          <div class="senha-forca-label" id="rfs-texto"></div>
+          <div class="senha-reqs">
+            <div class="sr" id="rsr-len"><span class="sr-icon"></span><span class="sr-txt">Mínimo 8 caracteres</span></div>
+            <div class="sr" id="rsr-mai"><span class="sr-icon"></span><span class="sr-txt">Pelo menos 1 letra maiúscula (A–Z)</span></div>
+            <div class="sr" id="rsr-min"><span class="sr-icon"></span><span class="sr-txt">Pelo menos 1 letra minúscula (a–z)</span></div>
+            <div class="sr" id="rsr-num"><span class="sr-icon"></span><span class="sr-txt">Pelo menos 1 número (0–9)</span></div>
+            <div class="sr" id="rsr-esp"><span class="sr-icon"></span><span class="sr-txt">Pelo menos 1 caractere especial (!@#$%...)</span></div>
+          </div>
+        </div>
+        <div class="campo-erro" id="e-rec-nova"></div>
+      </div>
+      <div class="campo">
+        <label class="campo-label">Confirmar nova senha</label>
+        <input type="password" class="campo-input" id="rec-nova-senha2" autocomplete="new-password">
+        <div class="campo-erro" id="e-rec-nova2">Senhas não conferem.</div>
+      </div>
+      <button class="btn-auth" onclick="salvarNovaSenha()">Salvar nova senha</button>
+      <div class="conta-ok" id="rec-nova-ok" style="display:none;margin-top:1rem;font-size:13px;color:#2ecc71;">
+        ✓ Senha alterada! Você já pode entrar.
+      </div>
+      <div class="conta-erro" id="rec-nova-erro" style="display:none;margin-top:.75rem;font-size:12px;color:#e74c3c;"></div>
     </div>
   </div>
 </div>
@@ -1450,14 +1643,37 @@ async function iniciar(){
     g.appendChild(d);
   }
 
+  // Detecta se o usuário chegou via link de recuperação de senha
+  const params = new URLSearchParams(window.location.search);
+  if(params.get('modo') === 'resetar-senha'){
+    // O Supabase já autenticou via token no hash da URL
+    // Abre direto o formulário de nova senha
+    document.getElementById('rec-passo1').style.display='none';
+    document.getElementById('rec-passo2').style.display='block';
+    document.getElementById('modal-rec-bg').classList.add('aberto');
+    // Limpa o parâmetro da URL sem recarregar
+    window.history.replaceState({}, '', window.location.pathname);
+  }
+
   // Verifica sessão ativa (ex: usuária volta depois de fechar o browser)
   const { data:{ session } } = await sb.auth.getSession();
   if(session){
     await carregarPerfil(session.user);
   }
 
-  // Escuta mudanças de sessão (login / logout / refresh)
+  // Escuta mudanças de sessão (login / logout / refresh / recuperação de senha)
   sb.auth.onAuthStateChange(async (_event, session) => {
+    if(_event === 'PASSWORD_RECOVERY'){
+      // Usuário clicou no link do e-mail — abre tela de nova senha
+      document.getElementById('rec-passo1').style.display='none';
+      document.getElementById('rec-passo2').style.display='block';
+      document.getElementById('rec-nova-ok').style.display='none';
+      document.getElementById('rec-nova-erro').style.display='none';
+      const btn = document.querySelector('#rec-passo2 .btn-auth');
+      if(btn){ btn.style.display='block'; btn.disabled=false; btn.textContent='Salvar nova senha'; }
+      document.getElementById('modal-rec-bg').classList.add('aberto');
+      return;
+    }
     if(session){ await carregarPerfil(session.user); }
     else { deslogar(); }
   });
@@ -1507,6 +1723,180 @@ function deslogar(){
   document.getElementById('ph-nome-usuario').textContent = '—';
   document.getElementById('plataforma').classList.remove('ativa');
   document.getElementById('entrada').classList.add('ativa');
+}
+
+/* ══════════════════════════════════════════
+   FORÇA DA SENHA — validação completa
+   Requisitos: 8+ chars, maiúscula, número, especial
+══════════════════════════════════════════ */
+function analisarSenha(senha){
+  return {
+    temLen : senha.length >= 8,
+    temMai : /[A-Z]/.test(senha),
+    temMin : /[a-z]/.test(senha),
+    temNum : /[0-9]/.test(senha),
+    temEsp : /[^A-Za-z0-9]/.test(senha),
+  };
+}
+
+function senhaValida(senha){
+  const r = analisarSenha(senha);
+  return r.temLen && r.temMai && r.temMin && r.temNum && r.temEsp;
+}
+
+function calcularPontos(r){
+  return [r.temLen, r.temMai, r.temMin, r.temNum, r.temEsp].filter(Boolean).length;
+}
+
+function renderChecklist(reqs, mapa){
+  // mapa = { 'sr-len': temLen, 'sr-mai': temMai, ... }
+  Object.entries(mapa).forEach(([id, ok])=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.classList.toggle('ok', ok);
+    const ico = el.querySelector('.sr-icon');
+    if(ico) ico.textContent = ok ? '✓' : '';
+  });
+}
+
+function renderBarras(pts, prefixo){
+  const cor     = pts<=2 ? 'ativa-fraca' : pts<=3 ? 'ativa-media' : 'ativa-forte';
+  const rotulos = {1:'Fraca',2:'Fraca',3:'Média',4:'Quase lá!',5:'Forte ✓'};
+  const rotCls  = {1:'fraca',2:'fraca',3:'media',4:'media',5:'forte'};
+  for(let i=1;i<=5;i++){
+    const seg = document.getElementById(prefixo+'s'+i);
+    if(seg) seg.className = 'senha-forca-seg' + (i<=pts && pts>0 ? ' '+cor : '');
+  }
+  const txt = document.getElementById(prefixo+'-texto');
+  if(txt){
+    txt.className = 'senha-forca-label ' + (rotCls[pts]||'');
+    txt.textContent = pts > 0 ? rotulos[pts] : '';
+  }
+}
+
+function avaliarSenha(val){
+  const wrap = document.getElementById('senha-forca-wrap');
+  const errEl = document.getElementById('e-senha');
+  errEl.classList.remove('visivel');
+
+  if(!val){ wrap.style.display='none'; return; }
+  wrap.style.display='block';
+
+  const r   = analisarSenha(val);
+  const pts = calcularPontos(r);
+  renderBarras(pts, 'sf');
+  renderChecklist(r, {
+    'sr-len': r.temLen,
+    'sr-mai': r.temMai,
+    'sr-min': r.temMin,
+    'sr-num': r.temNum,
+    'sr-esp': r.temEsp,
+  });
+}
+
+function avaliarSenhaRec(val){
+  const wrap = document.getElementById('rec-forca-wrap');
+  if(!val){ wrap.style.display='none'; return; }
+  wrap.style.display='block';
+
+  const r   = analisarSenha(val);
+  const pts = calcularPontos(r);
+  renderBarras(pts, 'rfs');
+  renderChecklist(r, {
+    'rsr-len': r.temLen,
+    'rsr-mai': r.temMai,
+    'rsr-min': r.temMin,
+    'rsr-num': r.temNum,
+    'rsr-esp': r.temEsp,
+  });
+}
+
+/* ══════════════════════════════════════════
+   RECUPERAR SENHA
+══════════════════════════════════════════ */
+function abrirRecuperarSenha(){
+  fecharModalLogin();
+  document.getElementById('rec-passo1').style.display='block';
+  document.getElementById('rec-passo2').style.display='none';
+  document.getElementById('rec-email').value='';
+  document.getElementById('rec-ok').style.display='none';
+  document.getElementById('rec-erro').style.display='none';
+  document.getElementById('e-rec-email').classList.remove('visivel');
+  document.getElementById('modal-rec-bg').classList.add('aberto');
+}
+function fecharRecuperarSenha(){
+  document.getElementById('modal-rec-bg').classList.remove('aberto');
+}
+
+async function enviarRecuperacao(){
+  const email = document.getElementById('rec-email').value.trim();
+  const eEl   = document.getElementById('e-rec-email');
+  const okEl  = document.getElementById('rec-ok');
+  const errEl = document.getElementById('rec-erro');
+  okEl.style.display='none'; errEl.style.display='none';
+
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    eEl.classList.add('visivel'); return;
+  }
+  eEl.classList.remove('visivel');
+
+  const btn = document.querySelector('#rec-passo1 .btn-auth');
+  btn.disabled=true; btn.textContent='Enviando...';
+
+  const redirectTo = window.location.origin + window.location.pathname + '?modo=resetar-senha';
+  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo });
+
+  btn.disabled=false; btn.textContent='Enviar link';
+
+  if(error){
+    errEl.textContent = 'Erro ao enviar. Verifique o e-mail e tente novamente.';
+    errEl.style.display='block';
+  } else {
+    okEl.style.display='block';
+    btn.style.display='none';
+  }
+}
+
+async function salvarNovaSenha(){
+  const nova  = document.getElementById('rec-nova-senha').value;
+  const nova2 = document.getElementById('rec-nova-senha2').value;
+  const eNova = document.getElementById('e-rec-nova');
+  const eConf = document.getElementById('e-rec-nova2');
+  const okEl  = document.getElementById('rec-nova-ok');
+  const errEl = document.getElementById('rec-nova-erro');
+  eNova.classList.remove('visivel'); eConf.classList.remove('visivel');
+  okEl.style.display='none'; errEl.style.display='none';
+
+  if(!senhaValida(nova)){
+    const r = analisarSenha(nova);
+    const faltam = [];
+    if(!r.temLen) faltam.push('mínimo 8 caracteres');
+    if(!r.temMai) faltam.push('uma letra maiúscula');
+    if(!r.temMin) faltam.push('uma letra minúscula');
+    if(!r.temNum) faltam.push('um número');
+    if(!r.temEsp) faltam.push('um caractere especial');
+    eNova.textContent = 'Falta: ' + faltam.join(', ') + '.';
+    eNova.classList.add('visivel');
+    document.getElementById('rec-forca-wrap').style.display='block';
+    avaliarSenhaRec(nova);
+    return;
+  }
+  if(nova !== nova2) { eConf.classList.add('visivel'); return; }
+
+  const btn = document.querySelector('#rec-passo2 .btn-auth');
+  btn.disabled=true; btn.textContent='Salvando...';
+
+  const { error } = await sb.auth.updateUser({ password: nova });
+  btn.disabled=false; btn.textContent='Salvar nova senha';
+
+  if(error){
+    errEl.textContent = 'Erro ao salvar. O link pode ter expirado. Solicite um novo.';
+    errEl.style.display='block';
+  } else {
+    okEl.style.display='block';
+    btn.style.display='none';
+    setTimeout(()=>{ fecharRecuperarSenha(); }, 2500);
+  }
 }
 
 /* ══════════════════════════════════════════
@@ -1568,7 +1958,16 @@ async function alterarSenha(){
   const err   = document.getElementById('conta-erro-msg');
   ok.classList.remove('visivel');
   err.classList.remove('visivel');
-  if(nova.length<8){ err.textContent='A nova senha deve ter mínimo 8 caracteres.'; err.classList.add('visivel'); return; }
+  if(!senhaValida(nova)){
+    const r = analisarSenha(nova);
+    const faltam = [];
+    if(!r.temLen) faltam.push('mínimo 8 caracteres');
+    if(!r.temMai) faltam.push('uma letra maiúscula');
+    if(!r.temMin) faltam.push('uma letra minúscula');
+    if(!r.temNum) faltam.push('um número');
+    if(!r.temEsp) faltam.push('um caractere especial');
+    err.textContent='Falta: '+faltam.join(', ')+'.'; err.classList.add('visivel'); return;
+  }
   if(nova!==nova2)  { err.textContent='As novas senhas não conferem.';             err.classList.add('visivel'); return; }
 
   const { error } = await sb.auth.updateUser({ password: nova });
@@ -2043,7 +2442,27 @@ async function cadastrar(){
   v('e-email','E-mail inválido.',!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
   v('e-tel','Apenas números.',!/^\d{8,}$/.test(tel));
   v('e-insta','Deve começar com @.',!insta.startsWith('@'));
-  v('e-senha','Mínimo 8 caracteres.',senha.length<8);
+
+  // Validação completa da senha
+  const r = analisarSenha(senha);
+  if(!r.temLen || !r.temMai || !r.temNum || !r.temEsp){
+    const faltam = [];
+    if(!r.temLen) faltam.push('mínimo 8 caracteres');
+    if(!r.temMai) faltam.push('uma letra maiúscula');
+    if(!r.temMin) faltam.push('uma letra minúscula');
+    if(!r.temNum) faltam.push('um número');
+    if(!r.temEsp) faltam.push('um caractere especial');
+    const eEl = document.getElementById('e-senha');
+    eEl.textContent = 'Falta: ' + faltam.join(', ') + '.';
+    eEl.classList.add('visivel');
+    // Garante que o checklist está visível
+    document.getElementById('senha-forca-wrap').style.display='block';
+    avaliarSenha(senha);
+    ok = false;
+  } else {
+    document.getElementById('e-senha').classList.remove('visivel');
+  }
+
   v('e-senha2','Senhas não conferem.',senha!==senha2);
   if(!ok) return;
 
