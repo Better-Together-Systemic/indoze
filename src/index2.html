@@ -2305,26 +2305,6 @@ function irParaIndez(){
   }, 200);
 }
 
-function irParaIndezComTexto(texto, dia){
-  // Navega para a aba Indez preservando o texto escolhido
-  ativarSecao('indez', document.querySelectorAll('.pn-btn')[3]);
-  // Re-aplica os valores após a navegação (a aba pode ter re-renderizado)
-  setTimeout(()=>{
-    const inp = document.getElementById('indez-input');
-    const diaEl = document.getElementById('indez-dia');
-    inp.value = texto;
-    if(dia) diaEl.value = dia;
-    else if(escrivaoContextoDia) diaEl.value = escrivaoContextoDia;
-    atualizarContador();
-    inp.scrollIntoView({behavior:'smooth',block:'center'});
-    inp.focus();
-    // Destaque pulsante no campo para o usuário ver que está preenchido
-    inp.style.borderColor = 'var(--ouro)';
-    inp.style.boxShadow = '0 0 0 2px rgba(200,149,42,0.35)';
-    setTimeout(()=>{ inp.style.borderColor = ''; inp.style.boxShadow = ''; }, 3000);
-  }, 150);
-}
-
 function toggleHistItem(el){
   const corpo  = el.nextElementSibling;
   const toggle = el.querySelector('.escriv-hist-item-toggle');
@@ -2446,7 +2426,7 @@ function escolherOpcaoIndez(texto, idx, dia, btnEl){
   document.querySelectorAll('.escriv-opcao-btn').forEach(b=>b.classList.remove('selecionada'));
   btnEl.classList.add('selecionada');
 
-  // Preenche o campo do Indez imediatamente
+  // Preenche o campo do Indez
   document.getElementById('indez-input').value = texto;
   if(dia) document.getElementById('indez-dia').value = dia;
 
@@ -2457,7 +2437,7 @@ function escolherOpcaoIndez(texto, idx, dia, btnEl){
     <div style="background:rgba(200,149,42,.08);border-left:2px solid var(--ouro);padding:.85rem 1.1rem;margin-bottom:.75rem;font-size:15px;color:rgba(250,250,248,.88);line-height:1.6;">
       ✓ Opção ${idx+1} escolhida. Vá ao Indez, edite se quiser e plante sua semente.
     </div>
-    <button class="btn-ir-indez" onclick="irParaIndezComTexto('${texto.replace(/'/g,"\\'")}', ${dia||'null'})">→ Ir para Meu Indez</button>`;
+    <button class="btn-ir-indez" onclick="irParaIndez()">→ Ir para Meu Indez</button>`;
 
   // Sincroniza o contador se o dia foi definido
   if(dia){ setTimeout(atualizarContador, 100); }
@@ -2564,11 +2544,6 @@ async function atualizarContador(){
       .eq('serie_id', serieAtiva.id)
       .eq('dia', dia);
     qtd = count||0;
-  } else {
-    try {
-      const local = JSON.parse(localStorage.getItem('indez_local')||'[]');
-      qtd = local.filter(o=>o.dia===dia).length;
-    } catch(e){ qtd=0; }
   }
   document.getElementById('indez-contador-dia').textContent = dia;
   document.getElementById('indez-contador-qtd').textContent = qtd;
@@ -2585,9 +2560,6 @@ async function botarOvo(){
   if(!diaVal||isNaN(dia)||dia<1||dia>12){ erroEl.textContent='Informe um dia válido entre 1 e 12.'; erroEl.classList.add('visivel'); return; }
   erroEl.classList.remove('visivel');
 
-  const btnPlantar = document.querySelector('.btn-plantar');
-  if(btnPlantar){ btnPlantar.disabled=true; btnPlantar.textContent='Plantando...'; }
-
   if(serieAtiva){
     const { error } = await sb.from('indez').insert({
       serie_id:   serieAtiva.id,
@@ -2597,64 +2569,24 @@ async function botarOvo(){
     });
     if(error){
       erroEl.textContent = error.message.includes('Limite') ? 'Você já plantou 3 Indez no Dia '+dia+'.' : 'Erro ao salvar. Tente novamente.';
-      erroEl.classList.add('visivel');
-      if(btnPlantar){ btnPlantar.disabled=false; btnPlantar.textContent='Plantar semente'; }
-      return;
+      erroEl.classList.add('visivel'); return;
     }
-  } else {
-    // Salva localmente quando não há sessão ativa
-    const chave = 'indez_local';
-    let local = [];
-    try { local = JSON.parse(localStorage.getItem(chave)||'[]'); } catch(e){ local=[]; }
-    const qtdDia = local.filter(o=>o.dia===dia).length;
-    if(qtdDia>=3){
-      erroEl.textContent = 'Você já plantou 3 Indez no Dia '+dia+'.';
-      erroEl.classList.add('visivel');
-      if(btnPlantar){ btnPlantar.disabled=false; btnPlantar.textContent='Plantar semente'; }
-      return;
-    }
-    local.push({ dia, texto:txt, numero_semente: qtdDia+1, plantado_em: new Date().toISOString() });
-    try { localStorage.setItem(chave, JSON.stringify(local)); } catch(e){}
   }
-
-  // Feedback visual de sucesso
-  const form = document.querySelector('.indez-form');
-  let okMsg = document.getElementById('indez-ok-msg');
-  if(!okMsg){
-    okMsg = document.createElement('div');
-    okMsg.id = 'indez-ok-msg';
-    okMsg.style.cssText = 'font-size:15px;color:#2ecc71;margin-top:8px;display:none;transition:opacity .3s;';
-    form.appendChild(okMsg);
-  }
-  okMsg.textContent = '🌱 Semente plantada com sucesso no Dia '+dia+'!';
-  okMsg.style.display = 'block';
-  okMsg.style.opacity = '1';
-  setTimeout(()=>{ okMsg.style.opacity='0'; setTimeout(()=>{ okMsg.style.display='none'; },400); }, 2500);
 
   document.getElementById('indez-input').value='';
-  if(btnPlantar){ btnPlantar.disabled=false; btnPlantar.textContent='Plantar semente'; }
   await atualizarContador();
   await renderOvos();
 }
 
 async function renderOvos(){
   const lista = document.getElementById('ovos-lista');
-  let ovos = [];
+  if(!serieAtiva){ lista.innerHTML='<div style="padding:1.5rem 0;font-size:15px;color:var(--muted);">Nenhum Indez plantado ainda. Comece hoje.</div>'; return; }
 
-  if(serieAtiva){
-    const { data } = await sb
-      .from('indez')
-      .select('*')
-      .eq('serie_id', serieAtiva.id)
-      .order('dia').order('numero_semente');
-    ovos = data || [];
-  } else {
-    // Lê do localStorage quando sem sessão
-    try { ovos = JSON.parse(localStorage.getItem('indez_local')||'[]'); } catch(e){ ovos=[]; }
-    ovos.sort((a,b)=> a.dia - b.dia || a.numero_semente - b.numero_semente);
-  }
-
-  if(!ovos){ lista.innerHTML='<div style="padding:1.5rem 0;font-size:15px;color:var(--muted);">Nenhum Indez plantado ainda. Comece hoje.</div>'; return; }
+  const { data: ovos } = await sb
+    .from('indez')
+    .select('*')
+    .eq('serie_id', serieAtiva.id)
+    .order('dia').order('numero_semente');
 
   if(!ovos||!ovos.length){ lista.innerHTML='<div style="padding:1.5rem 0;font-size:15px;color:var(--muted);">Nenhum Indez plantado ainda. Comece hoje.</div>'; return; }
 
