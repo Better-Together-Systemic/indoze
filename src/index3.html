@@ -2293,12 +2293,9 @@ function limparContextoDia(){
 }
 
 function irParaIndez(){
-  // Navega diretamente sem verificar login (seção é pública dentro da plataforma)
-  document.querySelectorAll('.secao').forEach(s=>s.classList.remove('ativa'));
-  document.getElementById('sec-indez').classList.add('ativa');
-  document.querySelectorAll('.pn-btn').forEach(b=>b.classList.remove('ativo'));
-  document.querySelectorAll('.pn-btn')[3].classList.add('ativo');
+  ativarSecao('indez', document.querySelectorAll('.pn-btn')[3]);
   if(escrivaoContextoDia) document.getElementById('indez-dia').value = escrivaoContextoDia;
+  // Rola para o campo de input do Indez com destaque visual
   setTimeout(()=>{
     const inp = document.getElementById('indez-input');
     inp.scrollIntoView({behavior:'smooth',block:'center'});
@@ -2308,26 +2305,23 @@ function irParaIndez(){
   }, 200);
 }
 
-function irParaIndezComTexto(){
-  const texto = window._indezTextoEscolhido || '';
-  const dia   = window._indezDiaEscolhido   || null;
-  // Navega diretamente sem verificar login
-  document.querySelectorAll('.secao').forEach(s=>s.classList.remove('ativa'));
-  document.getElementById('sec-indez').classList.add('ativa');
-  document.querySelectorAll('.pn-btn').forEach(b=>b.classList.remove('ativo'));
-  document.querySelectorAll('.pn-btn')[3].classList.add('ativo');
+function irParaIndezComTexto(texto, dia){
+  // Navega para a aba Indez preservando o texto escolhido
+  ativarSecao('indez', document.querySelectorAll('.pn-btn')[3]);
+  // Re-aplica os valores após a navegação (a aba pode ter re-renderizado)
   setTimeout(()=>{
-    const inp   = document.getElementById('indez-input');
+    const inp = document.getElementById('indez-input');
     const diaEl = document.getElementById('indez-dia');
-    if(texto) inp.value = texto;
-    if(dia)   diaEl.value = dia;
+    inp.value = texto;
+    if(dia) diaEl.value = dia;
     else if(escrivaoContextoDia) diaEl.value = escrivaoContextoDia;
     atualizarContador();
     inp.scrollIntoView({behavior:'smooth',block:'center'});
     inp.focus();
+    // Destaque pulsante no campo para o usuário ver que está preenchido
     inp.style.borderColor = 'var(--ouro)';
-    inp.style.boxShadow   = '0 0 0 2px rgba(200,149,42,0.35)';
-    setTimeout(()=>{ inp.style.borderColor=''; inp.style.boxShadow=''; }, 3000);
+    inp.style.boxShadow = '0 0 0 2px rgba(200,149,42,0.35)';
+    setTimeout(()=>{ inp.style.borderColor = ''; inp.style.boxShadow = ''; }, 3000);
   }, 150);
 }
 
@@ -2452,13 +2446,9 @@ function escolherOpcaoIndez(texto, idx, dia, btnEl){
   document.querySelectorAll('.escriv-opcao-btn').forEach(b=>b.classList.remove('selecionada'));
   btnEl.classList.add('selecionada');
 
-  // Guarda o texto escolhido numa variável global segura
-  window._indezTextoEscolhido = texto;
-  window._indezDiaEscolhido   = dia || escrivaoContextoDia || null;
-
   // Preenche o campo do Indez imediatamente
   document.getElementById('indez-input').value = texto;
-  if(window._indezDiaEscolhido) document.getElementById('indez-dia').value = window._indezDiaEscolhido;
+  if(dia) document.getElementById('indez-dia').value = dia;
 
   // Exibe o botão de ir para Indez com mensagem de confirmação
   const posResp = document.getElementById('escriv-pos-resp');
@@ -2467,10 +2457,10 @@ function escolherOpcaoIndez(texto, idx, dia, btnEl){
     <div style="background:rgba(200,149,42,.08);border-left:2px solid var(--ouro);padding:.85rem 1.1rem;margin-bottom:.75rem;font-size:15px;color:rgba(250,250,248,.88);line-height:1.6;">
       ✓ Opção ${idx+1} escolhida. Vá ao Indez, edite se quiser e plante sua semente.
     </div>
-    <button class="btn-ir-indez" onclick="irParaIndezComTexto()">→ Ir para Meu Indez</button>`;
+    <button class="btn-ir-indez" onclick="irParaIndezComTexto('${texto.replace(/'/g,"\\'")}', ${dia||'null'})">→ Ir para Meu Indez</button>`;
 
   // Sincroniza o contador se o dia foi definido
-  if(window._indezDiaEscolhido){ setTimeout(atualizarContador, 100); }
+  if(dia){ setTimeout(atualizarContador, 100); }
 }
 
 async function investigar(){
